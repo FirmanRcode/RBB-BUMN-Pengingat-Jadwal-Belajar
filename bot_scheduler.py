@@ -23,14 +23,17 @@ from apscheduler.triggers.cron import CronTrigger
 from bot_sender import JADWAL, send_telegram_message, build_reminder_message
 
 # ─── Logging Setup ────────────────────────────────────────────────────────────
+log_handlers = [logging.StreamHandler(sys.stdout)]
+try:
+    log_handlers.append(logging.FileHandler("bot_log.txt", encoding="utf-8"))
+except Exception:
+    pass  # Di Render filesystem mungkin read-only, skip file log
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.FileHandler("bot_log.txt", encoding="utf-8"),
-        logging.StreamHandler(sys.stdout),
-    ]
+    handlers=log_handlers,
 )
 log = logging.getLogger(__name__)
 
@@ -38,19 +41,33 @@ log = logging.getLogger(__name__)
 WIB = pytz.timezone("Asia/Jakarta")
 
 # ─── Load Config ──────────────────────────────────────────────────────────────
+# Prioritas: Environment Variables (Render) → config.json (lokal)
 CONFIG_FILE = "config.json"
 
 def load_config():
+    # 1️⃣ Coba dari Environment Variables (dipakai saat deploy ke Render)
+    bot_token = os.environ.get("BOT_TOKEN", "")
+    chat_id   = os.environ.get("CHAT_ID", "")
+
+    if bot_token and chat_id:
+        log.info("✅ Konfigurasi dimuat dari Environment Variables (Render mode).")
+        return {"bot_token": bot_token, "chat_id": chat_id}
+
+    # 2️⃣ Fallback ke config.json (dipakai saat develop lokal)
     if not os.path.exists(CONFIG_FILE):
-        log.error("File config.json tidak ditemukan!")
-        log.error("Buka dulu app Streamlit dan isi Bot Token + Chat ID, lalu simpan.")
+        log.error("Tidak ada config.json dan env var BOT_TOKEN/CHAT_ID belum diset!")
+        log.error("Lokal: Buka Streamlit → sidebar → simpan konfigurasi.")
+        log.error("Render: Set env var BOT_TOKEN dan CHAT_ID di dashboard Render.")
         sys.exit(1)
+
     with open(CONFIG_FILE, "r") as f:
         cfg = json.load(f)
+
     if not cfg.get("bot_token") or not cfg.get("chat_id"):
         log.error("Bot Token atau Chat ID masih kosong di config.json!")
-        log.error("Buka Streamlit app → sidebar → isi & simpan konfigurasi.")
         sys.exit(1)
+
+    log.info("✅ Konfigurasi dimuat dari config.json (local mode).")
     return cfg
 
 

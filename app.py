@@ -270,6 +270,11 @@ JADWAL = [
 CONFIG_FILE = "config.json"
 
 def load_config():
+    # 1️⃣ Env Vars dulu (Render) → 2️⃣ fallback config.json (lokal)
+    bot_token = os.environ.get("BOT_TOKEN", "")
+    chat_id   = os.environ.get("CHAT_ID", "")
+    if bot_token and chat_id:
+        return {"bot_token": bot_token, "chat_id": chat_id}
     if os.path.exists(CONFIG_FILE):
         with open(CONFIG_FILE, "r") as f:
             return json.load(f)

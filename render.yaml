@@ -1,0 +1,30 @@
+services:
+  # ─── 1. Web Service: Streamlit UI ─────────────────────────────────────────
+  - type: web
+    name: rbb-bumn-streamlit
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    envVars:
+      - key: BOT_TOKEN
+        sync: false          # Diisi manual di Render dashboard (RAHASIA)
+      - key: CHAT_ID
+        sync: false          # Diisi manual di Render dashboard (RAHASIA)
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  # ─── 2. Background Worker: Bot Scheduler ──────────────────────────────────
+  - type: worker
+    name: rbb-bumn-bot-scheduler
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot_scheduler.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false          # Diisi manual di Render dashboard (RAHASIA)
+      - key: CHAT_ID
+        sync: false          # Diisi manual di Render dashboard (RAHASIA)
+      - key: PYTHON_VERSION
+        value: 3.11.0
