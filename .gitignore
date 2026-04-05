@@ -1,0 +1,36 @@
+# ─── PRIVASI – File ini TIDAK boleh di-upload ke GitHub ───────────────────────
+config.json          # Bot Token & Chat ID Telegram (RAHASIA!)
+
+# ─── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+
+# ─── Virtual Environment ──────────────────────────────────────────────────────
+venv/
+env/
+.venv/
+.env/
+ENV/
+
+# ─── Bot Log ──────────────────────────────────────────────────────────────────
+bot_log.txt          # Log runtime bot (bisa berisi info sensitif)
+
+# ─── OS & Editor ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Streamlit ────────────────────────────────────────────────────────────────
+.streamlit/secrets.toml
